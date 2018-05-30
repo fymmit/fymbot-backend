@@ -11,6 +11,19 @@ app.use((req, res, next) => {
   });
 app.use(bodyParser.json());
 
+var users = [
+    {
+        name: "Heikki", points: "100"
+    },
+    {
+        name: "Markku", points: "200"
+    }
+]
+
+app.get('/users', (req, res) => {
+    res.json(users);
+})
+
 const port = process.env.PORT;
 const server = app.listen(port, () => {
     console.log(`Server listening port ${port}`);
