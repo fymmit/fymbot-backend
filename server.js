@@ -13,10 +13,10 @@ app.use(bodyParser.json());
 
 var users = [
     {
-        name: "Heikki", points: "100"
+        name: "Heikki", points: 100
     },
     {
-        name: "Markku", points: "200"
+        name: "Markku", points: 200
     }
 ]
 
