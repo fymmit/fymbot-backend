@@ -2,13 +2,14 @@ require('dotenv').config();
 const app = require('express')();
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const yt = require('./src/youtube.js');
 
 app.use(cors());
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
-  });
+});
 app.use(bodyParser.json());
 
 var users = [
@@ -22,6 +23,17 @@ var users = [
 
 app.get('/users', (req, res) => {
     res.json(users);
+})
+
+app.get('/youtube', (req, res) => {
+    yt.search( (err, result) => {
+        if (!err) {
+            res.send(result);
+        }
+        else {
+            res.send(err.message);
+        }
+    });
 })
 
 const port = process.env.PORT;
