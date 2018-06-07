@@ -44,21 +44,32 @@ app.post(`/${secret}/users`, (req, res) => {
 })
 
 app.post(`/${secret}/points`, (req, res) => {
-    var userFound = false;
+    findExistingUser(req.body.name, (err, user) => {
+        if (err) {
+            res.send(err.message);
+            return;
+        }
+        givePoints(user, req.body.points);
+        res.json(users);
+    })
+})
+
+function findExistingUser(searchedUsername, callback) {
     for (var i = 0; i < users.length; i++) {
         var user = users[i];
-        if (user.name == req.body.name) {
-            user.points += req.body.points;
-            userFound = true;
-            break;
+        if (user.name == searchedUsername) {
+            console.log('User found, ebin.');
+            callback(null, user);
+            return;
         }
     }
-    if (!userFound) {
-        res.send('User not found.');
-    }
-    console.log(users);
-    res.json(users);
-})
+    callback(new Error('User not found.'));
+    return;
+}
+
+function givePoints(user, points) {
+    user.points += points;
+}
 
 const port = process.env.PORT;
 const server = app.listen(port, () => {
