@@ -1,13 +1,21 @@
+require('dotenv').config();
 const YTSearch = require('youtube-search');
 
-// TODO: Implement function.
+const opts = {
+    maxResults: process.env.YOUTUBE_MAX_RESULTS || 5,
+    key: process.env.YOUTUBE_API_KEY,
+    type: 'video'
+};
+
 function search(searchTerm, callback) {
-
-    // successful search:
-    callback(null, videoUrl);
-
-    // unsuccessful search:
-    callback(new Error('No video found.'));
+    YTSearch(searchTerm, opts, (err, results) => {
+        if (err || results.length == 0) {
+            callback(new Error('No video found.'));
+        }
+        else {
+            callback(null, results.map(((res) => res["link"])));
+        }
+    });
 }
 
 module.exports = {
