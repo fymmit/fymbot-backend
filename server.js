@@ -26,13 +26,8 @@ app.get('/users', (req, res) => {
 })
 
 app.get('/youtube', (req, res) => {
-    yt.search( (err, result) => {
-        if (!err) {
-            res.send(result);
-        }
-        else {
-            res.send(err.message);
-        }
+    yt.search(req.query['q'], (err, result) => {
+        res.send(err ? err.message : result);
     });
 })
 
