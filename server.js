@@ -7,7 +7,10 @@ const yt = require('./src/youtube.js');
 app.use(cors());
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept"
+    );
     next();
 });
 app.use(bodyParser.json());
@@ -26,7 +29,7 @@ app.get('/users', (req, res) => {
 })
 
 app.get('/youtube', (req, res) => {
-    yt.search(req.query['q'], (err, result) => {
+    yt.search(req.query.q, (err, result) => {
         res.send(err ? err.message : result);
     });
 })

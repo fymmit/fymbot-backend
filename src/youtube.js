@@ -13,7 +13,7 @@ function search(searchTerm, callback) {
             callback(new Error('No video found.'));
         }
         else {
-            callback(null, results.map(((res) => res["link"])));
+            callback(null, results.map(res => res.link));
         }
     });
 }
