@@ -2,6 +2,7 @@ require('dotenv').config();
 const app = require('express')();
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const fs = require('fs');
 
 const secret = process.env.SECRET;
 
@@ -13,18 +14,14 @@ app.use((req, res, next) => {
   });
 app.use(bodyParser.json());
 
-var users = [
-    {
-        id: '1',
-        name: 'Heikki',
-        points: 100
-    },
-    {
-        id: '2',
-        name: 'Markku',
-        points: 200
-    }
-]
+let users
+
+const loadUserData = () => {
+    fs.readFile('users.json', 'utf8', (err, data) => {
+        !err ? users = JSON.parse(data) : console.log(err);
+    })
+    console.log("XD");
+}
 
 app.get('/users', (req, res) => {
     res.json(users);
@@ -39,18 +36,34 @@ app.post(`/${secret}/users`, (req, res) => {
     user.id = (users.length + 1).toString();
     user.name = req.body.name;
     users.push(user);
-    console.log(user);
-    res.json(users);
+    writeUserData().then(() => {
+        res.json(users);
+    }).catch(rejection => {
+        console.log(rejection);
+    })
 })
+
+writeUserData = () => {
+    return new Promise((resolve, reject) => {
+        let data = JSON.stringify(users);
+        fs.writeFile('users.json', data, 'utf8', (err) => {
+            err ? reject(err) : resolve();
+        })
+    })
+}
 
 app.post(`/${secret}/points`, (req, res) => {
     findExistingUser(req.body.name, (err, user) => {
         if (err) {
             res.send(err.message);
-            return;
+        } else {
+            givePoints(user, req.body.points);
+            writeUserData().then(() => {
+                res.json(users);
+            }).catch(rejection => {
+                console.log(rejection);
+            })
         }
-        givePoints(user, req.body.points);
-        res.json(users);
     })
 })
 
@@ -58,7 +71,6 @@ function findExistingUser(searchedUsername, callback) {
     for (var i = 0; i < users.length; i++) {
         var user = users[i];
         if (user.name == searchedUsername) {
-            console.log('User found, ebin.');
             callback(null, user);
             return;
         }
@@ -74,4 +86,5 @@ function givePoints(user, points) {
 const port = process.env.PORT;
 const server = app.listen(port, () => {
     console.log(`Server listening port ${port}`);
+    loadUserData();
 })
